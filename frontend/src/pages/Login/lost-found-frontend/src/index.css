@@ -1,0 +1,38 @@
+body {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+  background-image: linear-gradient(135deg, #0051ff,#5289ff, #abbeff);
+}
+
+#reun{
+  font-size: 2.25rem;
+  padding-bottom: 10px;
+}
+
+#right_side{
+  background-image: linear-gradient(90deg, #2563eb, #003cff);
+}
+
+#cards{
+  margin-top: 25px
+}
+
+.color_gray{
+  color: #6b7280;
+}
+
+#remember{
+  border-radius: 5px;
+  width: 19px;
+  height: 19px;
+}
+#rem_text{
+  font-size: 15px;
+  font-weight:400;
+ 
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
