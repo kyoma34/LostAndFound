@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import API from "../api/client";
+import Login from "./Login";
 
 function Home() {
   return (
     <div>
-      <h1>Frontend is working </h1>
+      <Login/>
     </div>
   );
 }
