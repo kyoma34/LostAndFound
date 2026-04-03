@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+<<<<<<< HEAD
 import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -38,17 +39,51 @@ function Login() {
           {/* LOGO */}
           <div className="mb-8">
             <img src="/logo.png" alt="logo" className="h-14 md:h-16" />
+=======
+
+// IMPORT YOUR ASSETS
+import logo from "../public/logo.png";
+import googleIcon from "../public/fl_google_icon.png";
+import facebookIcon from "../public/fl_facebook_icon.png";
+import okIcon from "../public/fl_ok_icon.png";
+
+function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center  p-4">
+      
+      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+        
+        {/* LEFT SIDE */}
+        <div className="w-full md:w-1/2 p-8 md:p-12">
+          
+          {/* LOGO */}
+          <div className="mb-8">
+            <img src={logo} alt="logo" className="h-14 md:h-16" />
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
           </div>
 
           {/* CENTERED TEXT */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
+<<<<<<< HEAD
             <p className="text-gray-500">Sign in to your account to continue</p>
           </div>
 
           {/* FORM */}
           <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
 
+=======
+            <p className="text-gray-500">
+              Sign in to your account to continue
+            </p>
+          </div>
+
+          {/* FORM */}
+          <form className="flex flex-col gap-5">
+            
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
             {/* EMAIL */}
             <div>
               <label className="text-sm font-semibold text-black-800">Email Address</label>
@@ -57,9 +92,12 @@ function Login() {
                 <input
                   type="email"
                   placeholder="Enter your email"
+<<<<<<< HEAD
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+=======
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
                   className="w-full pl-10 pr-3 py-3.5 
                   bg-gray-100/80 
                   rounded-xl 
@@ -80,9 +118,12 @@ function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
+<<<<<<< HEAD
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+=======
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
                   className="w-full pl-10 pr-3 py-3.5 
                   bg-gray-100/80 
                   rounded-xl 
@@ -103,9 +144,16 @@ function Login() {
 
             {/* REMEMBER + FORGOT */}
             <div className="flex justify-between items-center text-sm my-2">
+<<<<<<< HEAD
               <label id="log_rem_text" className="flex items-center gap-2 font-medium text-gray-800">
                <input
                     type="checkbox" id="log_remember"
+=======
+              <label id="rem_text" className="flex items-center gap-2 text-medium font-medium text-gray-800">
+  
+                <input
+                    type="checkbox" id="remember"
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
                     className="w-5 h-5 border border-gray-300 bg-gray-100 appearance-none 
                       checked:bg-[url('/public/fl_check_icon.png')] 
                       checked:bg-center 
@@ -113,14 +161,24 @@ function Login() {
                       checked:bg-[length:27px]
                       hover:scale-105 active:scale-95 hover:bg-gray-200 transition duration-200"
                 />
+<<<<<<< HEAD
                 <span>Remember me</span>
               </label>
 
               <span className="text-blue-500 cursor-pointer hover:text-blue-700 transition duration-200">
+=======
+
+                <span>Remember me</span>
+
+              </label>
+
+              <span className="text-blue-500 cursor-pointer  hover:text-blue-700 transition duration-200">
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
                 Forgot password?
               </span>
             </div>
 
+<<<<<<< HEAD
             {/* ERROR MESSAGE */}
             {error && (
               <p className="text-red-500 text-sm text-center -mt-2">{error}</p>
@@ -133,6 +191,11 @@ function Login() {
               className="bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-200 shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? "Signing in..." : "Sign In"}
+=======
+            {/* BUTTON */}
+            <button className="bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition duration-200 shadow-md hover:shadow-lg">
+              Sign In
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
             </button>
 
             {/* DIVIDER */}
@@ -142,6 +205,7 @@ function Login() {
               <div className="flex-1 h-px bg-gray-300"></div>
             </div>
 
+<<<<<<< HEAD
             {/* SOCIAL BUTTONS */}
             <div className="flex gap-4">
               <button
@@ -157,6 +221,17 @@ function Login() {
                 className="flex-1 border py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition"
               >
                 <img src="/fl_facebook_icon.png" alt="facebook" className="w-5 h-5" />
+=======
+            {/* SOCIAL BUTTONS WITH ICONS */}
+            <div className="flex gap-4">
+              <button className="flex-1 border py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition">
+                <img src={googleIcon} alt="google" className="w-5 h-5" />
+                Google
+              </button>
+
+              <button className="flex-1 border py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition">
+                <img src={facebookIcon} alt="facebook" className="w-5 h-5" />
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
                 Facebook
               </button>
             </div>
@@ -164,10 +239,13 @@ function Login() {
             {/* SIGN UP */}
             <p className="text-center text-sm mt-4 text-slate-600">
               Don't have an account?{" "}
+<<<<<<< HEAD
               <span
                   onClick={() => navigate("/register")}
                   className="text-blue-500 cursor-pointer hover:text-blue-700 transition duration-200"
                 ></span>
+=======
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
               <span className="text-blue-500 cursor-pointer hover:text-blue-700 transition duration-200">
                 Sign up
               </span>
@@ -177,6 +255,7 @@ function Login() {
         </div>
 
         {/* RIGHT SIDE */}
+<<<<<<< HEAD
         <div className="w-full md:w-1/2 text-white p-8 md:p-12 flex flex-col justify-center" id="log_right_side">
 
           <h2 className="font-semibold mb-4 leading-tight" id="log_reun">
@@ -217,6 +296,77 @@ function Login() {
           </div>
 
         </div>
+=======
+        <div className="w-full md:w-1/2 text-white p-8 md:p-12 flex flex-col justify-center" id="right_side">
+          
+          <h2 className=" font-semibold mb-4 leading-tight" id="reun">
+            Reuniting People with <div>Their Belongings</div> 
+          </h2>
+
+
+
+          {/* FIXED FULL PARAGRAPH */}
+          <p className="text-blue-100 mb-8 text-lg">
+            Join thousands of users who trust our platform to find what matters most. 
+            Our community-driven approach has helped recover countless lost items.
+          </p>
+
+          {/* BIGGER STATS */}
+            <div className="flex gap-6 mb-10" id="cards">
+  
+                <div className="flex-1 rounded-2xl p-7 
+                    bg-white/10 backdrop-blur-lg 
+                    border border-white/20 
+                    shadow-[0_8px_30px_rgba(0,0,0,0.1)] hover:shadow-xl transition duration-300">
+
+                    <p className="text-4xl font-medium text-yellow-400 tracking-tight">
+                    12,547
+                    </p>
+
+                    <p className="text-sm text-blue-100 mt-2">
+                    Items Found
+                    </p>
+                </div>
+
+                <div className="flex-1 rounded-2xl p-7 
+                    bg-white/10 backdrop-blur-lg 
+                    border border-white/20 
+                    shadow-[0_8px_30px_rgba(0,0,0,0.1)] hover:shadow-xl transition duration-300">
+
+                    <p className="text-4xl font-medium text-yellow-400 tracking-tight">
+                    8,392
+                    </p>
+
+                    <p className="text-sm text-blue-100 mt-2">
+                    Active Users
+                    </p>
+                </div>
+
+            </div>
+
+          {/* FEATURES WITH IMAGE ICON */}
+          <div className="space-y-4 text-medium  font-regular">
+            
+            <div className="flex items-center gap-3">
+              <img src={okIcon} alt="ok" className="w-10 h-10" />
+              <span>Secure and private communication</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <img src={okIcon} alt="ok" className="w-10 h-10" />
+              <span>24/7 support available</span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <img src={okIcon} alt="ok" className="w-10 h-10" />
+              <span>Free to use, always</span>
+            </div>
+
+          </div>
+
+        </div>
+
+>>>>>>> 537ecaa (Adding Only Login.jsx page to pages folder, and some Assets to Public folder)
       </div>
     </div>
   );
