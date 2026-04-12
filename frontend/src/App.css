@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+.home_user-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home_username {
+  font-weight: 600;
+  color: #333;
+}
+
+.home_logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  margin: 10%;
+}
+
+.home_logout:hover {
+  opacity: 0.7;
+}
