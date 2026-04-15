@@ -19,7 +19,7 @@ function RecentItems() {
   }, []);
 
   return (
-    <section className="home_recent">
+    <section className="home_recent" id="recent-items">
       <h2>
         Recent <span>Items</span>
       </h2>
@@ -32,9 +32,7 @@ function RecentItems() {
         {items.slice(0, 6).map((item) => (
           <div
               key={item._id}
-              className={`home_item_card ${
-                item.status === "unclaimed" ? "unclaimed" : "claimed"
-              }`}
+              className="home_item_card"
             >
             
             <div className="home_item_img">
@@ -54,7 +52,7 @@ function RecentItems() {
 
               <span
                 className={`home_item_status ${
-                  item.status === "unclaimed" ? "lost" : "found"
+                  item.status === "unclaimed" ? "unclaimed" : "claimed"
                 }`}
               >
                 {item.status}
@@ -77,7 +75,7 @@ function RecentItems() {
               <div className="home_item_inline">
                 <Clock4 size={15} color="#666" />
                 <p className="home_item_time">
-                  {new Date(item.createdAt).toLocaleString()}
+                  {new Date().getDate() - new Date(item.createdAt).getDate() === 0 ? `${new Date().getHours() - new Date(item.createdAt).getHours() === 0 ? `${new Date().getMinutes() - new Date(item.createdAt).getMinutes() === 0 ? "Just now" : `${new Date().getMinutes() - new Date(item.createdAt).getMinutes()} minutes ago`}` : `${new Date().getHours() - new Date(item.createdAt).getHours()} hours ago`}` : `${new Date().getDate() - new Date(item.createdAt).getDate()} days ago`}
                 </p>
               </div>
             </div>

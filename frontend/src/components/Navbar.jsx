@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { LogOut, User, CircleUserRound } from "lucide-react";
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -19,9 +21,9 @@ function Navbar() {
       </div>
 
       <div className="home_nav-links">
-        <a href="#">Home</a>
-        <a href="#">How It Works</a>
-        <a href="#">Recent Posts</a>
+        <a href="/home">Home</a>
+        <a href="/home#how-it-works">How It Works</a>
+        <a href="/home#recent-items">Recent Posts</a>
         <a href="#">Browse</a>
         <a href="#">Contact</a>
       </div>
@@ -30,24 +32,16 @@ function Navbar() {
         <span className="home_username">
           {user?.name || "User"}
         </span>
-
-        <button className="home_logout" onClick={handleLogout}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m16 17 5-5-5-5" />
-            <path d="M21 12H9" />
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-          </svg>
-        </button>
+        <span>
+          {user?.avatar || <CircleUserRound size={40}/>}
+        </span>
+        
+        <span className="home_logout">
+          <button onClick={handleLogout}>
+            <LogOut size={20}/>
+            
+          </button>
+        </span>
       </div>
     </nav>
   );

@@ -2,6 +2,42 @@ import { useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import { registerUser } from "../api/auth";
 import "../style/register.css";
+import { useEffect, useRef } from "react";
+import { Package, Users , Bell, Plus, Search, Mail, Lock, User} from "lucide-react";
+
+
+function StatCard({ value, label, icon, isVisible }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let start = 0;
+    const end = value;
+    const duration = 1500;
+    const increment = end / (duration / 16);
+
+    const counter = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(counter);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, 16);
+
+    return () => clearInterval(counter);
+  }, [isVisible, value]);
+
+  return (
+    <div className="reg_card flex-1 rounded-2xl p-7 bg-white/10 backdrop-blur-lg border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.1)] hover:shadow-xl transition duration-300">
+      <div className="home_stats_icon">{icon}</div>
+      <h2 className="text-4xl font-bold text-yellow-400">{count.toLocaleString()}</h2>
+      <p className="text-gray-300 text-sm">{label}</p>
+    </div>
+  );
+}
 
 
 export default function Register() {
@@ -13,6 +49,27 @@ export default function Register() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const [visible, setVisible] = useState(false);
+  const statsRef = useRef();
+
+  useEffect(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            setVisible(true);
+            observer.disconnect(); // run only once
+          }
+        },
+        { threshold: 0.3 }
+      );
+  
+      if (statsRef.current) {
+        observer.observe(statsRef.current);
+      }
+  
+      return () => observer.disconnect();
+    }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,147 +94,205 @@ export default function Register() {
   };
 
   return (
-    <div className="container">
+    <div className="body">
+      <div className="container">
 
-      {/* LEFT SIDE */}
-      <div className="left">
+        {/* LEFT SIDE */}
+        <div className="left">
 
-        <div className="logo">
-          <img src="/logo.png" alt="logo" width={500} />
-        </div>
+          <div className="logo">
+            <img src="/logo.png" alt="logo" width={500} />
+          </div>
 
-        <h2 className="title">Create Account</h2>
-        <p className="subtitle">
-          Join our community and start finding lost items
-        </p>
+          <h2 className="title">Create Account</h2>
+          <p className="subtitle">
+            Join our community and start finding lost items
+          </p>
 
-        <form onSubmit={handleSubmit}>
-          <label>Full Name</label>
-          <input
-            type="text"
-            placeholder="Enter your full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-
-          <label>Email Address</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            placeholder="Confirm your password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-
-          <div className="checkbox">
+          <form onSubmit={handleSubmit}>
+            <label>Full Name</label>
+            <div className="relative mt-1 gap-1">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 " size={18} />
             <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
+              type="text"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full pl-10 pr-3 py-3.5 
+                  rounded-xl 
+                  outline-none 
+                  border border-transparent 
+                  focus:border-blue-400 
+                  transition-all duration-200"
             />
-            <span>
-              I agree to the <a href="#">Terms of Service</a> and{" "}
-              <a href="#">Privacy Policy</a>
-            </span>
+            </div>
+
+            <label>Email Address</label>
+            <div className="relative mt-1 gap-1">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 " size={18} />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full pl-10 pr-3 py-3.5 
+                  rounded-xl 
+                  outline-none 
+                  border border-transparent 
+                  focus:border-blue-400 
+                  transition-all duration-200"
+            /></div>
+
+            <label>Password</label>
+            <div className="relative mt-1">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="password"
+                placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full pl-10 pr-3 py-3.5 
+                   
+                  rounded-xl 
+                  outline-none 
+                  border border-transparent 
+                  focus:border-blue-400 
+                  transition-all duration-200"
+              />
+            </div>
+
+            <label>Confirm Password</label>
+            <div className="relative mt-1">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="w-full pl-10 pr-3 py-3.5 
+                 
+                  rounded-xl 
+                  outline-none 
+                  border border-transparent 
+                  focus:border-blue-400 
+                 
+                  transition-all duration-200"
+            />
+            </div>
+
+            <div className="ok">
+              <label htmlFor="agreed" className="flex items-center gap-2 font-medium text-gray-800">
+              <input
+                type="checkbox"
+                id="agreed"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="w-5 h-5 border border-gray-300  appearance-none 
+                      checked:bg-[url('/public/fl_check_icon.png')] 
+                      checked:bg-center 
+                      checked:bg-no-repeat 
+                      checked:bg-[length:27px]
+                      hover:scale-105 active:scale-95 hover:bg-gray-300 transition duration-200"
+              />
+              <span>
+                I agree to the <a href="#">Terms of Service</a> and{" "}
+                <a href="#">Privacy Policy</a>
+              </span>
+              </label>
+            </div>
+
+            {error && (
+              <p style={{ color: "red", fontSize: "14px", marginTop: "4px" }}>
+                {error}
+              </p>
+            )}
+
+            <button className="main-btn" type="submit" disabled={loading}>
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="divider">
+            <span></span>
+            <p>Or sign up with</p>
+            <span></span>
           </div>
 
-          {error && (
-            <p style={{ color: "red", fontSize: "14px", marginTop: "4px" }}>
-              {error}
-            </p>
-          )}
+          {/* Social */}
+          <div className="flex gap-4">
+              <button
+                type="button"
+                className="flex-1 border border-gray-300 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition"
+              >
+                <img src="/fl_google_icon.png" alt="google" className="w-5 h-5" />
+                Google
+              </button>
 
-          <button className="main-btn" type="submit" disabled={loading}>
-            {loading ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
+              <button
+                type="button"
+                className="flex-1 border border-gray-300 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition"
+              >
+                <img src="/fl_facebook_icon.png" alt="facebook" className="w-5 h-5" />
+                Facebook
+              </button>
+            </div>
 
-        {/* Divider */}
-        <div className="divider">
-          <span></span>
-          <p>Or sign up with</p>
-          <span></span>
+          <p className="signin">
+            Already have an account?{" "}
+            <a onClick={() => navigate("/login")} style={{ cursor: "pointer" }}>
+              Sign in
+            </a>
+          </p>
+
         </div>
 
-        {/* Social */}
-        <div className="social">
-          <button type="button">Google</button>
-          <button type="button">Facebook</button>
+        {/* RIGHT SIDE */}
+        <div className="right">
+          <h1 className="hero-title">Start Your Journey Today</h1>
+          <p className="hero-text">
+            Create your free account and join a growing community dedicated to
+            helping people find their lost belongings. It only takes a minute to
+            get started.
+          </p>
+
+          <div className="feature">
+            <span className="bg-yellow-500 rounded-full p-2"><Search size={30} color="#2d6cdf"/></span>
+            <div>
+              <h4>Search Lost Items</h4>
+              <p>Access our database with powerful filters</p>
+            </div>
+          </div>
+
+          <div className="feature">
+            <span className="bg-yellow-500 rounded-full p-2"><Plus size={30} color="#2d6cdf"/></span>
+            <div>
+              <h4>Report Found Items</h4>
+              <p>Help others by posting items you've found</p>
+            </div>
+          </div>
+
+          <div className="feature">
+            <span className="bg-yellow-500 rounded-full p-2"><Bell size={30} color="#2d6cdf"/></span>
+            <div>
+              <h4>Get Instant Alerts</h4>
+              <p>Receive notifications when items match</p>
+            </div>
+          </div>
+          
+
+          {/* STATS */}
+          <div className={`flex gap-6 mb-10 ${visible ? "visible" : ""}`} ref={statsRef} id="reg_cards">
+            <StatCard value={12398} label="Items Found" icon={<Package size={35} color="white"/>} isVisible={visible}/>
+            <StatCard value={9876} label="Active Users" icon={<Users size={35} color="white"/>} isVisible={visible}/>
+          </div>
+          
         </div>
-
-        <p className="signin">
-          Already have an account?{" "}
-          <a onClick={() => navigate("/login")} style={{ cursor: "pointer" }}>
-            Sign in
-          </a>
-        </p>
-
       </div>
-
-      {/* RIGHT SIDE */}
-      <div className="right">
-        <h1 className="hero-title">Start Your Journey Today</h1>
-        <p className="hero-text">
-          Create your free account and join a growing community dedicated to
-          helping people find their lost belongings. It only takes a minute to
-          get started.
-        </p>
-
-        <div className="feature">
-          <span><img src="/icons8-zoom-in-48.png" alt="Search" width="38" height="38" /></span>
-          <div>
-            <h4>Search Lost Items</h4>
-            <p>Access our database with powerful filters</p>
-          </div>
-        </div>
-
-        <div className="feature">
-          <span><img src="/icons8-plus-48.png" width={38} height={38} /></span>
-          <div>
-            <h4>Report Found Items</h4>
-            <p>Help others by posting items you've found</p>
-          </div>
-        </div>
-
-        <div className="feature">
-          <span><img src="/icons8-alarm-in-48.png" width={38} height={38} /></span>
-          <div>
-            <h4>Get Instant Alerts</h4>
-            <p>Receive notifications when items match</p>
-          </div>
-        </div>
-
-        <div className="stats">
-          <div className="stat-box">
-            <h2>12,547</h2>
-            <span>Items Found</span>
-          </div>
-          <div className="stat-box">
-            <h2>8,392</h2>
-            <span>Active Users</span>
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 }

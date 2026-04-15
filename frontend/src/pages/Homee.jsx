@@ -7,7 +7,7 @@ import FloatingButton from "../components/FloatingButton";
 
 function Homee() {
   return (
-    <div className="home_body">
+    <div className="home_body" id="home">
       <Navbar />
       <Hero />
       <HowItWorks />

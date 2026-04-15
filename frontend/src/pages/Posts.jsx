@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { createPost } from "../api/posts";
 import { useNavigate } from "react-router-dom";
 import "../index.css";
+import Navbar from "../components/Navbar";
 
 const features = [
   {
@@ -53,25 +54,27 @@ export default function Posts() {
   const [category, setCategory]     = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation]     = useState("");
-  const [photos, setPhotos]         = useState([]);
+  const [photos, setPhotos]         = useState([]); // { file, preview }
   const [dragOver, setDragOver]     = useState(false);
   const [published, setPublished]   = useState(false);
   const fileInputRef = useRef(null);
   
 
   const handleFiles = (files) => {
-    const valid = Array.from(files)
+    const validFiles = Array.from(files)
       .filter((f) => f.type === "image/png" || f.type === "image/jpeg")
       .slice(0, 5 - photos.length);
-    Promise.all(
-      valid.map(
-        (f) => new Promise((res) => {
-          const r = new FileReader();
-          r.onload = (e) => res(e.target.result);
-          r.readAsDataURL(f);
-        })
-      )
-    ).then((urls) => setPhotos((p) => [...p, ...urls].slice(0, 5)));
+
+    const filesWithPreview = validFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setPhotos((p) => [...p, ...filesWithPreview].slice(0, 5));
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
   };
 
   const handleDrop = (e) => {
@@ -82,39 +85,41 @@ export default function Posts() {
 
   const removePhoto = (i) => setPhotos((p) => p.filter((_, idx) => idx !== i));
   const handlePublish = async () => {
-  if (!title || !category || !description || !location) return;
+    if (!title || !category || !description || !location) return;
 
-  try {
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("desc", description);
-    formData.append("type", category);
-    formData.append("date", new Date().toISOString());
-    formData.append("location", location);
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("desc", description);
+      formData.append("type", category);
+      formData.append("date", new Date().toISOString());
+      formData.append("location", location);
 
-    // send image
-    const files = fileInputRef.current.files;
-    if (files.length > 0) {
-      formData.append("image", files[0]);
+      // submit the currently selected preview image, not the raw file input list
+      if (photos.length > 0 && photos[0].file) {
+        formData.append("image", photos[0].file);
+      }
+
+      await createPost(formData);
+
+      setPublished(true);
+    } catch (err) {
+      console.error(err);
+      alert("Error while publishing");
     }
-
-    await createPost(formData);
-
-    setPublished(true);
-  } catch (err) {
-    console.error(err);
-    alert("Error while publishing");
-  }
-};
+  };
 const navigate = useNavigate();
   const handleReset = () => { setTitle(""); setCategory(""); setDescription(""); setLocation(""); setPhotos([]); setPublished(false); };
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #2563eb 0%, #60a5fa 55%, #bfdbfe 100%)" }}>
-  
+
+    
+
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #2563eb 0%, #60a5fa 55%, #bfdbfe 100%)" }} className="mt-16">
+      <Navbar />
 
       <div className="page">
-        <button className="go-back" onClick={() => navigate("/posts")}>
+        <button className="go-back" onClick={() => navigate("/home")}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
           </svg>
@@ -219,9 +224,9 @@ const navigate = useNavigate();
                     </div>
                     {photos.length > 0 && (
                       <div className="photo-grid">
-                        {photos.map((src, i) => (
+                        {photos.map((photo, i) => (
                           <div className="photo-thumb" key={i}>
-                            <img src={src} alt={`upload-${i}`} />
+                            <img src={photo.preview} alt={`upload-${i}`} />
                             <button className="photo-remove" onClick={() => removePhoto(i)}>✕</button>
                           </div>
                         ))}

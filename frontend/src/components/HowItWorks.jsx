@@ -32,7 +32,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="home_how">
+    <section className="home_how" id="how-it-works">
       <h2>
         How It <span>Works</span>
       </h2>

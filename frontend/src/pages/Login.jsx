@@ -77,7 +77,7 @@ function Login() {
       const res = await loginUser(email, password);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      navigate("/posts");
+      navigate("/home");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
