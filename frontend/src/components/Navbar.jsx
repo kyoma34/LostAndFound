@@ -25,7 +25,7 @@ function Navbar() {
         <a href="/home#how-it-works">How It Works</a>
         <a href="/home#recent-items">Recent Posts</a>
         <a href="#">Browse</a>
-        <a href="#">Contact</a>
+        <a href="/chat">Contact</a>
       </div>
 
       <div className="home_user-section">
