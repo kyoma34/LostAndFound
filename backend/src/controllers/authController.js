@@ -2,11 +2,13 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs");
 
-// Générer JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE
-    });
+// Helper function to generate JWT token
+const generateToken = (userId) => {
+  return jwt.sign(
+    { id: userId },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 };
 
 // @desc    Inscription utilisateur

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/authMiddleware");
+
+const requireAuth = require("../middleware/authMiddleware");
 const upload = require("../middleware/uploadMiddleware");
 
 const {
@@ -8,13 +9,20 @@ const {
   getAllPosts,
   getPostById,
   updatePost,
-  deletePost
+  deletePost,
 } = require("../controllers/postController");
 
-router.post("/", auth, upload.single("image"), createPost);
+// CREATE (protected)
+router.post("/", requireAuth, upload.single("image"), createPost);
+
+// READ
 router.get("/", getAllPosts);
 router.get("/:id", getPostById);
-router.put("/:id", auth, upload.single("image"), updatePost);
-router.delete("/:id", auth, deletePost);
+
+// UPDATE (protected)
+router.put("/:id", requireAuth, upload.single("image"), updatePost);
+
+// DELETE (protected)
+router.delete("/:id", requireAuth, deletePost);
 
 module.exports = router;
