@@ -4,6 +4,7 @@ import { getPosts } from "../api/posts";
 
 function RecentItems() {
   const [items, setItems] = useState([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -29,7 +30,8 @@ function RecentItems() {
       </p>
 
       <div className="home_recent_grid">
-        {items.slice(0, 6).map((item) => (
+        {(showAll ? items : items.slice(0, 6)).map((item) => (
+
           <div
               key={item._id}
               className="home_item_card"
@@ -84,7 +86,9 @@ function RecentItems() {
         ))}
       </div>
 
-      <button className="home_view_all">View All Items</button>
+      <button className="home_view_all" onClick={() => setShowAll(prev => !prev)}>
+        {showAll ? "Show Less" : "View All Items"}
+      </button>    
     </section>
   );
 }

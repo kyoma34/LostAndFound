@@ -237,7 +237,7 @@ const navigate = useNavigate();
                   {/* Actions */}
                   <div className="actions">
                     <button className="btn-publish" onClick={handlePublish}>Publish</button>
-                    <button className="btn-cancel" onClick={() => navigate("/posts")}>Cancel</button>
+                    <button className="btn-cancel" onClick={() => navigate("/home")}>Cancel</button>
                     <button className="btn-draft">Save Draft</button>
                   </div>
                 </div>

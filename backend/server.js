@@ -4,6 +4,8 @@ const cors = require("cors");
 const { connectDB } = require("./src/config/db.js");
 const authRoutes = require("./src/routes/authRoutes.js")
 const postRoutes = require("./src/routes/postRoutes.js")
+const conversationRoutes = require("./src/routes/conversationRoutes");
+const messageRoutes      = require("./src/routes/messageRoutes");
 
 
 dotenv.config();
@@ -26,6 +28,8 @@ app.use(cors())
 app.use("/api/auth", authRoutes)
 app.use("/api/posts", postRoutes)
 app.use("/uploads", express.static("uploads"))
+app.use("/api/conversations", conversationRoutes)
+app.use("/api/messages",      messageRoutes)
 
 connectDB().then(() => {
     app.listen(PORT, () => {
