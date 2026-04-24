@@ -1,42 +1,57 @@
-const CONVERSATIONS = [];
+const mongoose = require("mongoose");
 
-async function findExisting(user1Id, user2Id) {
-  return CONVERSATIONS.find(
-    (c) =>
-      (c.members.user1 === user1Id && c.members.user2 === user2Id) ||
-      (c.members.user1 === user2Id && c.members.user2 === user1Id)
-  ) || null;
-}
+const ConversationSchema = new mongoose.Schema(
+  {
+    members: {
+      user1: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      user2: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+    },
+    lastMessage: {
+      type: String,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-async function findByUserId(userId) {
-  return [...CONVERSATIONS]
-    .filter((c) => c.members.user1 === userId || c.members.user2 === userId)
-    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-}
+// Statics for convenience
+ConversationSchema.statics.findExisting = async function(user1Id, user2Id) {
+  return this.findOne({
+    $or: [
+      { "members.user1": user1Id, "members.user2": user2Id },
+      { "members.user1": user2Id, "members.user2": user1Id },
+    ],
+  });
+};
 
-async function findById(id) {
-  return CONVERSATIONS.find((c) => c._id === id) || null;
-}
+ConversationSchema.statics.findByUserId = async function(userId) {
+  return this.find({
+    $or: [
+      { "members.user1": userId },
+      { "members.user2": userId },
+    ],
+  })
+    .populate("members.user1", "name email avatar")
+    .populate("members.user2", "name email avatar")
+    .sort({ updatedAt: -1 });
+};
 
-async function create(user1Id, user2Id) {
-  const newConversation = {
-    _id:         String(CONVERSATIONS.length + 1),
-    members:     { user1: user1Id, user2: user2Id },
-    lastMessage: null,
-    updatedAt:   new Date().toISOString(),
-  };
+ConversationSchema.statics.updateLastMessage = async function(id, text) {
+  return this.findByIdAndUpdate(
+    id,
+    { lastMessage: text },
+    { new: true }
+  );
+};
 
-  CONVERSATIONS.push(newConversation);
-  return newConversation;
-}
-
-async function updateLastMessage(id, text) {
-  const conversation = CONVERSATIONS.find((c) => c._id === id);
-  if (!conversation) return null;
-
-  conversation.lastMessage = text;
-  conversation.updatedAt   = new Date().toISOString();
-  return conversation;
-}
-
-module.exports = { findExisting, findByUserId, findById, create, updateLastMessage };
+module.exports = mongoose.model("Conversation", ConversationSchema);

@@ -1,22 +1,37 @@
-const MESSAGES = [];
+const mongoose = require("mongoose");
 
-async function findByConversationId(conversationId) {
-  return [...MESSAGES]
-    .filter((m) => m.conversationId === conversationId)
-    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); // oldest first
-}
+const MessageSchema = new mongoose.Schema(
+  {
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
+    sender: {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      name: String,
+      email: String,
+      avatar: String,
+    },
+    text: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-async function create({ conversationId, sender, text }) {
-  const newMessage = {
-    _id:            String(MESSAGES.length + 1),
-    conversationId,
-    sender,         // { id, name, email } from token
-    text,
-    createdAt:      new Date().toISOString(),
-  };
+// Statics for convenience
+MessageSchema.statics.findByConversationId = async function(conversationId) {
+  return this.find({ conversationId })
+    .populate("sender.id", "name email avatar")
+    .sort({ createdAt: 1 }); // oldest first
+};
 
-  MESSAGES.push(newMessage);
-  return newMessage;
-}
-
-module.exports = { findByConversationId, create };
+module.exports = mongoose.model("Message", MessageSchema);

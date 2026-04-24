@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Search, Send } from "lucide-react";
+import { getConversations, getConversationById } from "../api/conversations";
+import { getMessages, sendMessage as sendMessageAPI } from "../api/messages";
 
 /* ===== Helper: format time ===== */
 const formatMessageTime = (date) => {
@@ -18,201 +21,112 @@ const formatConversationTime = (date) => {
 };
 
 const Chat = () => {
+  const location = useLocation();
   const messagesEndRef = useRef(null);
-
-  /* ===== Conversations ===== */
-  const [conversations, setConversations] = useState([
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      avatar: "https://i.pravatar.cc/40?img=1",
-      status: "Active now",
-      messages: [
-        {
-          text: "Hi! I found your wallet.",
-          type: "received",
-          time: new Date(),
-        },
-        {
-          text: "Really? That's amazing!",
-          type: "sent",
-          time: new Date(),
-        },
-        {
-          text: "Yes, near a coffee shop.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      avatar: "https://i.pravatar.cc/40?img=2",
-      status: "Offline",
-      messages: [
-        {
-          text: "Is this still available?",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Emma Davis",
-      avatar: "https://i.pravatar.cc/40?img=3",
-      status: "Offline",
-      messages: [
-        {
-          text: "Perfect! See you then.",
-          type: "received",
-          time: new Date(),
-        },
-      ],
-    },
-  ]);
-
-  const [activeId, setActiveId] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [conversations, setConversations] = useState([]);
+  const [activeConversationId, setActiveConversationId] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
-  const activeConversation = conversations.find(
-    (c) => c.id === activeId
-  );
+  // Get current user ID on mount
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user);
+        setCurrentUserId(parsedUser.id);
+      } catch (e) {
+        console.error("Error parsing user:", e);
+      }
+    }
+  }, []);
 
-  /* ===== Auto Scroll ===== */
+  // Fetch conversations on mount
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const response = await getConversations();
+        setConversations(response.data);
+        
+        // Set active conversation from navigation state or use first conversation
+        const conversationIdFromNav = location.state?.conversationId;
+        if (conversationIdFromNav) {
+          setActiveConversationId(conversationIdFromNav);
+        } else if (response.data.length > 0) {
+          setActiveConversationId(response.data[0]._id);
+        }
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [location.state]);
+
+  // Fetch messages when active conversation changes
+  useEffect(() => {
+    if (!activeConversationId) return;
+
+    const fetchMessages = async () => {
+      try {
+        const response = await getMessages(activeConversationId);
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+  }, [activeConversationId]);
+
+  // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeConversation]);
+  }, [messages]);
 
-  /* ===== Send Message ===== */
-  const sendMessage = () => {
-    if (!input.trim()) return;
+  // Send message
+  const sendMessage = async () => {
+    if (!input.trim() || !activeConversationId) return;
 
-    const updated = conversations.map((conv) => {
-      if (conv.id === activeId) {
-        return {
-          ...conv,
-          messages: [
-            ...conv.messages,
-            {
-              text: input,
-              type: "sent",
-              time: new Date(),
-            },
-          ],
-        };
-      }
-      return conv;
-    });
-
-    setConversations(updated);
-    setInput("");
+    setSendingMessage(true);
+    try {
+      const response = await sendMessageAPI(activeConversationId, input);
+      setMessages([...messages, response.data]);
+      setInput("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("Failed to send message");
+    } finally {
+      setSendingMessage(false);
+    }
   };
+
+  const activeConversation = conversations.find(
+    (c) => c._id === activeConversationId
+  );
+
+  if (loading) {
+    return (
+      <div className="chatpage_container">
+        <Navbar />
+        <div style={{ padding: "20px", textAlign: "center" }}>Loading conversations...</div>
+      </div>
+    );
+  }
+
+  if (!activeConversation) {
+    return (
+      <div className="chatpage_container">
+        <Navbar />
+        <div style={{ padding: "20px", textAlign: "center" }}>No conversations yet</div>
+      </div>
+    );
+  }
 
   return (
     <div className="chatpage_container">
@@ -231,18 +145,18 @@ const Chat = () => {
 
         <div className="chatpage_conversations">
         {conversations.map((conv) => {
-          const lastMsg = conv.messages[conv.messages.length - 1];
+          const lastMsg = conv.lastMessage;
 
           return (
             <div
-              key={conv.id}
+              key={conv._id}
               className={`chatpage_conversation ${
-                conv.id === activeId ? "active" : ""
+                conv._id === activeConversationId ? "active" : ""
               }`}
-              onClick={() => setActiveId(conv.id)}
+              onClick={() => setActiveConversationId(conv._id)}
             >
               <img
-                src={conv.avatar}
+                src={conv.otherUser?.avatar || "https://i.pravatar.cc/40?img=0"}
                 alt=""
                 style={{
                   width: "50px",
@@ -252,15 +166,15 @@ const Chat = () => {
               />
 
                 <div className="chatpage_conv-details">
-                  <strong>{conv.name}</strong>
+                  <strong>{conv.otherUser?.name || "Unknown"}</strong>
                   <p style={{ fontSize: "13px", opacity: 0.8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "160px",}}>
-                    {lastMsg.text}
+                    {lastMsg || "No messages yet"}
                   </p>
                   
                 </div>
 
                 <div className="chatpage_conv-date">
-                    {formatConversationTime(lastMsg.time)}
+                    {formatConversationTime(conv.updatedAt)}
                 </div>
             </div>
           );
@@ -274,15 +188,15 @@ const Chat = () => {
         {/* HEADER */}
         <div className="chatpage_header" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <img
-            src={activeConversation.avatar}
+            src={activeConversation.otherUser?.avatar || "https://i.pravatar.cc/40?img=0"}
             alt=""
             style={{ width: "40px", borderRadius: "50%" }}
           />
 
           <div>
-            <div>{activeConversation.name}</div>
+            <div>{activeConversation.otherUser?.name || "Unknown"}</div>
             <div style={{ fontSize: "12px", opacity: 0.8 }}>
-              {activeConversation.status}
+              Active
             </div>
           </div>
         </div>
@@ -291,38 +205,42 @@ const Chat = () => {
         <div className="chatpage_messagesWrapper">
           <div className="chatpage_messagesContainer">
 
-            {activeConversation.messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`chatpage_message ${msg.type}`}
-              >
-                {msg.type === "received" && (
-                  <img
-                    src={activeConversation.avatar}
-                    alt=""
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      borderRadius: "50%",
-                      marginRight: "8px",
-                    }}
-                  />
-                )}
+            {messages.map((msg) => {
+              const isReceived = msg.sender?.id !== currentUserId;
+              
+              return (
+                <div
+                  key={msg._id}
+                  className={`chatpage_message ${isReceived ? "received" : "sent"}`}
+                >
+                  {isReceived && (
+                    <img
+                      src={msg.sender?.avatar || "https://i.pravatar.cc/40?img=0"}
+                      alt=""
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        borderRadius: "50%",
+                        marginRight: "8px",
+                      }}
+                    />
+                  )}
 
-                <div className="chatpage_msgContent">
-                  <div className="chatpage_bubble">{msg.text}</div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      marginTop: "4px",
-                      opacity: 0.6,
-                    }}
-                  >
-                    {formatMessageTime(msg.time)}
+                  <div className="chatpage_msgContent">
+                    <div className="chatpage_bubble">{msg.text}</div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        marginTop: "4px",
+                        opacity: 0.6,
+                      }}
+                    >
+                      {formatMessageTime(msg.createdAt)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             <div ref={messagesEndRef}></div>
           </div>
@@ -337,12 +255,14 @@ const Chat = () => {
               placeholder="Type a message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              onKeyDown={(e) => e.key === "Enter" && !sendingMessage && sendMessage()}
+              disabled={sendingMessage}
             />
 
             <button
               className="chatpage_sendBtn"
               onClick={sendMessage}
+              disabled={sendingMessage}
             >
               <Send size={18} className=""/>
             </button>

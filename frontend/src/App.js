@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Posts from "./pages/Posts";
 import Register from "./pages/Register";
 import Homee from "./pages/Homee";
+import RecentItems from "./components/RecentItems";
 import Chat from "./pages/Chat";
 
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Homee />} />
         <Route path="/createpost" element={<Posts />} />
+        <Route path="/recent" element={<RecentItems />} />
         <Route path="/chat" element={<Chat />} />
       </Routes>
     </BrowserRouter>
